@@ -1,0 +1,89 @@
+
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.title {
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+
+.add-section-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.add-section-container,
+.add-content-container {
+  padding: 16px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  margin-bottom: 16px;
+}
+
+.input,
+.textarea {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  margin-bottom: 8px;
+}
+
+.button-group {
+  display: flex;
+  gap: 8px;
+}
+
+.section-container {
+  margin-bottom: 32px;
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.section-title {
+  font-size: 1.25rem;
+  font-weight: semibold;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 8px;
+}
+
+.table-cell-small {
+  width: 15%;
+}
+
+.table-cell-actions {
+  width: 96px;
+}
+
+.content-display {
+  white-space: pre-line;
+}
+
+.header-buttons{
+  display: flex;
+  gap:8px;
+}
+
+.handbook-dialog-container {
+  flex-wrap: nowrap !important;
+}
+
+.handbook-dialog-container > .flex {
+  flex-wrap: nowrap !important;
+}
+
+

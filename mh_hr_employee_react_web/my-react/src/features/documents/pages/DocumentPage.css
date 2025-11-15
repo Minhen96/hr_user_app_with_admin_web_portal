@@ -1,0 +1,284 @@
+.profile-page-container {
+  display: flex;
+  background-color: #f3f4f6;
+  min-height: 100vh;
+}
+
+.profile-page-content {
+  flex: 1;
+  padding: 30px;
+  padding-top: 40px;
+}
+
+.tabs {
+  display: flex;
+  gap: 20px;
+  border-bottom: 1px solid #ddd;
+  margin-bottom: 0px;
+}
+
+.tab {
+  padding: 10px;
+  cursor: pointer;
+  color: #888;
+  transition: all 0.3s ease;
+}
+
+.tab:hover {
+  color: #0073e6;
+}
+
+.tab.active {
+  color: #333;
+  border-bottom: 2px solid #0073e6;
+  font-weight: bold;
+}
+
+.memo-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+#memo-button {
+  padding: 8px 16px;
+  background-color: #0073e6;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+#memo-button:hover {
+  background-color: #0056b3;
+}
+
+.doc-content {
+  border: 2px solid #ddd;
+  padding: 20px;
+  background-color: rgb(240, 239, 239);
+}
+
+.support-card {
+  background-color: white;
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 16px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.support-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.card-header h3 {
+  margin: 0;
+  color: #333;
+}
+
+.card-meta {
+  display: flex;
+  flex-direction: column;
+  font-size: 0.9em;
+  color: #666;
+  margin-top: 4px;
+}
+
+.card-meta span {
+  margin-bottom: 4px;
+}
+
+.card-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.edit-button,
+.delete-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  color: #666;
+  transition: color 0.3s ease;
+}
+
+.edit-button:hover {
+  color: #0073e6;
+}
+
+.delete-button:hover {
+  color: #dc3545;
+}
+
+.card-content {
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid #eee;
+}
+
+.loading {
+  text-align: center;
+  padding: 20px;
+  color: #666;
+}
+
+.no-documents {
+  text-align: center;
+  padding: 20px;
+  color: #666;
+  font-style: italic;
+}
+
+.document-groups {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.document-group {
+  background-color: transparent;
+}
+
+.group-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 16px;
+  padding-bottom: 8px;
+  border-bottom: 2px solid #0073e6;
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  width: 100%;
+}
+
+.card-meta {
+  color: #666;
+  font-size: 0.9rem;
+}
+
+/* For ALL_POSTED tab */
+.card-meta span {
+  margin-right: 1rem;
+}
+
+/* For other tabs */
+.flex {
+  display: flex;
+}
+
+.justify-between {
+  justify-content: space-between;
+}
+
+.items-center {
+  align-items: center;
+}
+
+.w-full {
+  width: 100%;
+}
+
+.gap-4 {
+  gap: 1rem;
+}
+
+.download-button {
+  padding: 0.5rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #2563eb;  /* blue-600 */
+  transition: color 0.2s;
+}
+
+.download-button:hover {
+  color: #1d4ed8;  /* blue-700 */
+}
+
+.card-actions {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+
+.flex {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.min-h-screen {
+  min-height: 100vh;
+}
+
+.bg-gray-100 {
+  background-color: #f7fafc;
+}
+
+.ml-64 {
+  margin-left: 0; /* Adjust for smaller screens */
+}
+
+@media (min-width: 768px) {
+  .ml-64 {
+    margin-left: 16rem;
+  }
+}
+
+.overflow-x-auto {
+  overflow-x: auto;
+}
+
+.doc-content {
+  padding: 1rem;
+}
+
+.group-title {
+  font-size: 1.2rem;
+  font-weight: bold;
+  margin-bottom: 1rem;
+}
+
+/* Make buttons adapt for smaller screens */
+button {
+  font-size: 0.9rem;
+}
+
+@media (max-width: 768px) {
+  .flex-1 {
+    margin-left: 0;
+    padding: 1rem;
+  }
+
+  .bg-white {
+    padding: 1rem;
+  }
+
+  .tab-item {
+    flex: 1 1 auto;
+  }
+}
+
+.handbook-dialog {
+  flex-wrap: nowrap;
+  width: 100%;
+}
+
+
+

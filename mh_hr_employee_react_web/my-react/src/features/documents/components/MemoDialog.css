@@ -1,0 +1,189 @@
+/* Overlay */
+.dialog-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    backdrop-filter: blur(4px); /* Adds subtle blur to background */
+  }
+  
+  /* Dialog content */
+  .dialog-content {
+    background: #ffffff;
+    border-radius: 12px;
+    padding: 2rem;
+    max-width: 450px;
+    width: 90%;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    animation: fadeIn 0.3s ease;
+    position: relative;
+  }
+  
+  /* Header */
+  .dialog-header h2 {
+    margin: 0;
+    font-size: 1.5rem;
+    color: #333;
+    font-weight: 600;
+  }
+  
+  /* Form group */
+  .form-group {
+    margin-top: 1rem;
+  }
+  
+  .form-group label {
+    font-size: 0.875rem;
+    color: #555;
+    margin-bottom: 0.25rem;
+    display: inline-block;
+  }
+  
+  /* Input and Textarea styles */
+  .dialog-content input,
+  .dialog-content textarea {
+    width: 100%;
+    padding: 0.75rem;
+    padding-right: 0;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    font-size: 1rem;
+    transition: border-color 0.3s;
+  }
+  
+  .dialog-content textarea{
+    height: 200px;
+  }
+  .dialog-content input:focus,
+  .dialog-content textarea:focus {
+    border-color: #4a90e2;
+    outline: none;
+  }
+  
+  /* Footer buttons */
+  .dialog-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.75rem;
+    margin-top: 1.5rem;
+  }
+  
+  .dialog-footer button {
+    padding: 0.5rem 1.25rem;
+    font-size: 1rem;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+  
+  .dialog-footer button[variant="outline"] {
+    background-color: transparent;
+    color: #555;
+    border: 1px solid #ccc;
+  }
+  
+  .dialog-footer button[variant="outline"]:hover {
+    background-color: #f1f1f1;
+  }
+  
+  .dialog-footer button:not([variant="outline"]) {
+    background-color: #4a90e2;
+    color: white;
+    border: none;
+  }
+  
+  .dialog-footer button:not([variant="outline"]):hover {
+    background-color: #357ABD;
+  }
+  
+  /* Animation */
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: scale(0.95);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+
+
+  .dialog-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .dialog-content {
+    background: #fff;
+    border-radius: 8px;
+    width: 90%;
+    max-width: 600px;
+    padding: 20px;
+  }
+  
+  .dialog-header {
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  
+  .dialog-body .form-group {
+    margin-bottom: 20px;
+  }
+  
+  .file-upload-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  
+  .upload-button-container {
+    display: flex;
+    align-items: center;
+  }
+  
+  .remove-file {
+    background: none;
+    border: none;
+    color: red;
+    cursor: pointer;
+  }
+  
+  .dialog-footer {
+    display: flex;
+    justify-content: space-between;
+  }
+  
+  .hidden {
+    display: none;
+  }
+  
+  .icon {
+    margin-right: 5px;
+  }
+  
+  .upload-button {
+    display: flex;
+    align-items: center;
+    justify-content: center; 
+    gap: 8px; 
+  }
+  
+  .upload-icon {
+    width: 20px; /* Adjust icon width */
+    height: 30px; /* Adjust icon height */
+  }
+  

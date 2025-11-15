@@ -1,0 +1,82 @@
+
+.support-container {
+    display: flex;
+    height: 100vh;
+  }
+  
+  .main-content {
+    flex-grow: 1;
+    background-color: #f3f4f6;
+    padding: 40px;
+  }
+  
+  .main-content h2 {
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 20px;
+  }
+  
+  .support-card {
+    background-color: #fff;
+    padding: 20px;
+    margin-bottom: 15px;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+    transition: box-shadow 0.3s;
+  }
+  
+  .support-card:hover {
+    box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15);
+  }
+
+  /* Style for Change Password button */
+.change-password-btn {
+  background-color: #007bff; /* Blue color for primary action */
+  color: white;
+  font-size: 16px;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+.change-password-btn:hover {
+  background-color: #0056b3; /* Darker shade on hover */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* Style for Logout button */
+.logout-btn {
+  background-color: #dc3545; /* Red for logout */
+  color: white;
+  font-size: 16px;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+  display: inline-block; /* Ensures alignment with NavLink */
+}
+
+.logout-btn:hover {
+  background-color: #a71d2a; /* Darker red on hover */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* Align NavLink inside the Logout button */
+.logout-btn .link {
+  color: white;
+  text-decoration: none;
+}
+
+.logout-btn .link.active {
+  text-decoration: underline;
+}
+
+  
+
+  

@@ -1,0 +1,582 @@
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+import { Search } from 'lucide-react';
+import { Card, CardContent } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import Sidebar from '../../../shared/components/Sidebar';
+import "./EquipmentPage.css";
+import jsPDF from 'jspdf';
+import { X, FileText, Calendar, User, Tag, AlertTriangle, CheckCircle, ArrowUp, ArrowDown } from 'lucide-react';
+import apiClient from '../../../core/api/client';
+import * as equipmentApi from '../api/equipmentApi';
+
+
+const generatePDFReport = (request) => {
+  // Create a new jsPDF instance with portrait orientation
+  const doc = new jsPDF('portrait', 'mm', 'a4');
+  
+  // Set up fonts and styles
+  doc.setFont('helvetica');
+  
+  // Title
+  doc.setFontSize(18);
+  doc.text('Change Request Form (CRF)', 150, 20, { align: 'right' });
+  
+  // Create a table-like structure
+  doc.setFontSize(12);
+  let yPosition = 30;
+  const startX = 20;
+  const cellWidth = 50; // Adjust width as needed
+  const valueWidth = 130; // Adjust width for value column
+  const cellHeight = 10; // Adjust height for each row
+  
+  // Helper function to add a row with borders
+  const addRowWithBorder = (label, value, boldLabel = false) => {
+    // Draw borders
+    doc.rect(startX, yPosition, cellWidth, cellHeight); // Label cell border
+    doc.rect(startX + cellWidth, yPosition, valueWidth, cellHeight); // Value cell border
+
+    // Add text
+    if (boldLabel) {
+      doc.setFont('helvetica', 'bold');
+    } else {
+      doc.setFont('helvetica', 'normal');
+    }
+    
+    doc.text(label, startX + 2, yPosition + 7); // Slight padding for label
+    doc.setFont('helvetica', 'normal');
+
+    // Handle multiline text for value
+    const splitText = doc.splitTextToSize(value || 'N/A', valueWidth - 5);
+    splitText.forEach((line, index) => {
+      doc.text(line, startX + cellWidth + 2, yPosition + 7 + index * 4);
+    });
+
+    // Adjust yPosition for the next row
+    yPosition += Math.max(cellHeight, splitText.length * 4);
+  };
+
+  // Add rows for request details
+  addRowWithBorder('REF.NO', request.id.toString(), true);
+  addRowWithBorder('REQUESTOR', request.requesterName, true);
+  addRowWithBorder('DEPARTMENT', request.department, true);
+  addRowWithBorder('DATE', new Date(request.dateRequested).toLocaleDateString(), true);
+  addRowWithBorder('REASON', request.reason, true);
+  addRowWithBorder('DESCRIPTION', request.description, true);  
+  addRowWithBorder('RISK', request.risk, true);
+  addRowWithBorder('INSTRUCTIONS', request.instruction, true);
+  addRowWithBorder('COMPLETION DATE', new Date(request.completeDate).toLocaleDateString(), true);
+  addRowWithBorder('POST REVIEW', request.postReview, true);
+
+  // Add signatures section
+  yPosition += 10; 
+  doc.setFontSize(14);
+
+  // Signature section layout
+  const signatureStartX = startX;
+  const signatureWidth = 80; // Slightly reduced width to fit side by side
+  const signaturePadding = 10; // Padding between signature sections
+
+  // Helper function to render signature
+  const renderSignature = (label, name, date, signatureData, x, y) => {
+    doc.text(label, x, y);
+    y += 10;
+
+    // Signature details
+    doc.setFontSize(12);
+    doc.text(`Name: ${name || 'N/A'}`, x, y);
+    y += 7;
+    doc.text(`Date: ${date || 'N/A'}`, x, y);
+    y += 10;
+
+    // Signature section
+    doc.text('Signature', x, y);
+    y += 10;
+
+    // Render signature if available
+    if (signatureData) {
+      try {
+        const signaturePoints = JSON.parse(signatureData.points);
+        
+        const canvas = document.createElement('canvas');
+        canvas.width = signatureData.boundaryWidth;
+        canvas.height = signatureData.boundaryHeight;
+        const ctx = canvas.getContext('2d');
+        
+        ctx.strokeStyle = 'black';
+        ctx.lineWidth = 2;
+        ctx.lineCap = 'round';
+        ctx.lineJoin = 'round';
+
+        ctx.beginPath();
+        ctx.moveTo(signaturePoints[0].x, signaturePoints[0].y);
+
+        for (let i = 1; i < signaturePoints.length; i++) {
+          ctx.lineTo(signaturePoints[i].x, signaturePoints[i].y);
+        }
+
+        ctx.stroke();
+
+        const imgData = canvas.toDataURL('image/png');
+        
+        const imgWidth = signatureWidth;
+        const imgHeight = (canvas.height / canvas.width) * imgWidth;
+        doc.addImage(imgData, 'PNG', x, y, imgWidth, imgHeight);
+        
+        return y + imgHeight;
+      } catch (error) {
+        console.error('Error rendering signature:', error);
+        doc.text('Signature not available', x, y);
+        return y + 10;
+      }
+    } else {
+      doc.text('No signature provided', x, y);
+      return y + 10;
+    }
+  };
+
+  // Format date with more details
+  const formatDate = (dateString) => {
+    return dateString 
+      ? new Date(dateString).toLocaleDateString('en-US', {
+          year: 'numeric',
+          month: 'short',
+          day: 'numeric',
+          hour: '2-digit',
+          minute: '2-digit'
+        }) 
+      : 'N/A';
+  };
+
+  // Render requester and approver signatures side by side
+  const requesterSignatureY = renderSignature(
+    'Requester Details', 
+    request.requesterName, 
+    new Date(request.dateRequested).toLocaleDateString(),
+    request.signature, 
+    signatureStartX, 
+    yPosition
+  );
+
+  const approverSignatureY = renderSignature(
+    'Approver Details', 
+    request.approverName || 'Not Approved', 
+    formatDate(request.dateApproved),
+    request.approvalSignature, 
+    signatureStartX + signatureWidth + signaturePadding, 
+    yPosition
+  );
+
+  // Add document number at the bottom of the page
+  doc.setFontSize(10);
+  doc.text('Document No: ISMS-P09-F01', startX, 280, { align: 'left' });
+
+  // Save the PDF
+  doc.save(`Change_Request_${request.id}_Report.pdf`);
+};
+
+
+const ChangeRequestDetailsDialog = ({ isOpen, onClose, request }) => {
+  if (!isOpen || !request) return null;
+
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
+      <div className="relative w-full max-w-3xl mx-4 bg-white rounded-2xl shadow-xl border border-slate-200 overflow-hidden animate-fade-in">
+        <div className="flex items-center justify-between p-6 bg-gradient-to-r from-slate-50 to-white border-b">
+          <h2 className="text-2xl font-bold text-slate-800 flex items-center gap-3">
+            <FileText className="w-6 h-6 text-blue-500" />
+            Asset Request Details
+          </h2>
+          <button 
+            onClick={onClose} 
+            className="text-slate-500 hover:text-slate-800 transition-colors rounded-full p-2 hover:bg-slate-100"
+          >
+            <X className="w-6 h-6" />
+          </button>
+        </div>
+
+        <div className="p-6 space-y-6 overflow-y-auto max-h-[70vh]">
+        
+          <div className="grid md:grid-cols-2 gap-4">
+            <DetailRow 
+              icon={<Tag className="w-5 h-5 text-blue-500" />} 
+              label="Product Code" 
+              value={request.productCode || 'N/A'} 
+            />
+            <DetailRow 
+              icon={<User className="w-5 h-5 text-emerald-500" />} 
+              label="Requester" 
+              value={request.requesterName || 'N/A'} 
+            />
+            <DetailRow 
+              icon={<Calendar className="w-5 h-5 text-violet-500" />} 
+              label="Request Date" 
+              value={request.dateRequested ? new Date(request.dateRequested).toLocaleDateString() : 'N/A'} 
+            />
+            {request.completeDate && (
+              <DetailRow 
+                icon={<Calendar className="w-5 h-5 text-violet-500" />} 
+                label="Complete Date" 
+                value={new Date(request.completeDate).toLocaleDateString()} 
+              />
+            )}
+          </div>
+
+          <div className="space-y-4">
+            <DescriptionSection 
+              icon={<AlertTriangle className="w-6 h-6 text-amber-500" />} 
+              title="Description" 
+              content={request.description || 'No description provided'} 
+            />
+            <DescriptionSection 
+              icon={<AlertTriangle className="w-6 h-6 text-rose-500" />} 
+              title="Reason" 
+              content={request.reason || 'No reason specified'} 
+            />
+          </div>
+
+          {request.approverName && (
+            <div className="bg-gradient-to-r from-indigo-50 to-white p-6 rounded-xl border border-indigo-100">
+              <div className="flex items-center gap-4">
+                <div className="p-3 bg-white rounded-full shadow-sm">
+                  <User className="w-6 h-6 text-indigo-500" />
+                </div>
+                <div>
+                  <p className="font-semibold text-slate-700">Approved By</p>
+                  <p className="text-slate-600">{request.approverName}</p>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+
+        <div className="bg-gradient-to-r from-slate-50 to-white border-t p-4 flex justify-end gap-3">
+          <button 
+            onClick={() => generatePDFReport(request)}
+            className="flex items-center gap-2 px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-all shadow-sm hover:shadow-md"
+          >
+            <FileText className="w-5 h-5" />
+            Print Report
+          </button>
+          <button 
+            onClick={onClose}
+            className="px-6 py-2 bg-slate-100 text-slate-600 rounded-lg hover:bg-slate-200 transition-colors"
+          >
+            Close
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// Helper Components
+const DetailRow = ({ icon, label, value }) => (
+  <div className="flex items-center gap-4 p-4 bg-gradient-to-r from-slate-50 to-white rounded-xl border border-slate-200 hover:border-slate-300 transition-colors">
+    <div className="p-2 bg-white rounded-lg shadow-sm">
+      {icon}
+    </div>
+    <div>
+      <p className="text-xs font-medium text-slate-500 uppercase tracking-wider">{label}</p>
+      <p className="font-medium text-slate-800">{value}</p>
+    </div>
+  </div>
+);
+
+const DescriptionSection = ({ icon, title, content }) => (
+  <div className="bg-gradient-to-r from-slate-50 to-white p-6 rounded-xl border border-slate-200">
+    <div className="flex items-center gap-4 mb-4">
+      <div className="p-2 bg-white rounded-lg shadow-sm">
+        {icon}
+      </div>
+      <h3 className="text-lg font-semibold text-slate-800">{title}</h3>
+    </div>
+    <p className="text-slate-600 leading-relaxed">{content}</p>
+  </div>
+);
+
+
+const EquipmentPage = () => {
+  const [changeRequests, setChangeRequests] = useState([]);
+  const [selectedRequest, setSelectedRequest] = useState(null);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  
+  // Filter states
+  const [searchTerm, setSearchTerm] = useState('');
+  const [selectedStatus, setSelectedStatus] = useState('all');
+  const [selectedDepartment, setSelectedDepartment] = useState('all');
+  
+  // Sorting states
+  const [sortColumn, setSortColumn] = useState('dateRequested');
+  const [sortDirection, setSortDirection] = useState('desc');
+  
+  // Derived states for filter options
+  const [statuses, setStatuses] = useState([]);
+  const [departments, setDepartments] = useState([]);
+
+  useEffect(() => {
+    fetchChangeRequests();
+  }, []);
+
+  useEffect(() => {
+    if (changeRequests.length > 0) {
+      const uniqueStatuses = [...new Set(changeRequests.map(req => req.status))];
+      const uniqueDepartments = [...new Set(changeRequests.map(req => req.department))];
+      setStatuses(uniqueStatuses);
+      setDepartments(uniqueDepartments);
+    }
+  }, [changeRequests]);
+
+  const fetchChangeRequests = async () => {
+    try {
+      const response = await apiClient.get(`/changeRequests/brief`);
+      const requestsWithProductCode = response.data.map(request => ({
+        ...request,
+        productCode: request.productCode || 'N/A'
+      }));
+      setChangeRequests(requestsWithProductCode);
+    } catch (error) {
+      console.error('Error fetching change requests:', error);
+      // Set empty array on error to prevent UI issues
+      setChangeRequests([]);
+    }
+  };
+
+  const formatDate = (dateString) => {
+    return new Date(dateString).toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric'
+    });
+  };
+
+  const handleViewDetails = async (request) => {
+    try {
+      const response = await apiClient.get(`/changeRequests/${request.id}/details`);
+      setSelectedRequest({
+        ...request,
+        ...response.data
+      });
+      setIsDialogOpen(true);
+    } catch (error) {
+      console.error('Error fetching request details:', error);
+    }
+  };
+
+  const handleSort = (column) => {
+    if (sortColumn === column) {
+      setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
+    } else {
+      setSortColumn(column);
+      setSortDirection('desc');
+    }
+  };
+
+  const sortRequests = (requests) => {
+    return [...requests].sort((a, b) => {
+      let valueA, valueB;
+      switch (sortColumn) {
+        case 'productCode':
+          valueA = a.productCode || '';
+          valueB = b.productCode || '';
+          break;
+        case 'requesterName':
+          valueA = a.requesterName || '';
+          valueB = b.requesterName || '';
+          break;
+        case 'department':
+          valueA = a.department || '';
+          valueB = b.department || '';
+          break;
+        case 'dateRequested':
+          valueA = new Date(a.dateRequested);
+          valueB = new Date(b.dateRequested);
+          break;
+        case 'activeStatus':  // Added sorting for activeStatus
+          valueA = a.activeStatus || '';
+          valueB = b.activeStatus || '';
+          break;
+        default:
+          valueA = new Date(a.dateRequested);
+          valueB = new Date(b.dateRequested);
+          break;
+      }
+      if (valueA < valueB) return sortDirection === 'asc' ? -1 : 1;
+      if (valueA > valueB) return sortDirection === 'asc' ? 1 : -1;
+      return 0;
+    });
+  };
+
+  const filteredRequests = sortRequests(
+    changeRequests.filter(request => {
+      const matchesSearch = 
+        request.productCode?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        request.requesterName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        request.reason?.toLowerCase().includes(searchTerm.toLowerCase());
+      const matchesStatus = selectedStatus === 'all' || request.status === selectedStatus;
+      const matchesDepartment = selectedDepartment === 'all' || request.department === selectedDepartment;
+      return matchesSearch && matchesStatus && matchesDepartment;
+    })
+  );
+
+  const handleReset = () => {
+    setSearchTerm('');
+    setSelectedStatus('all');
+    setSelectedDepartment('all');
+    setSortColumn('dateRequested');
+    setSortDirection('desc');
+  };
+
+  const SortIcon = ({ column }) => {
+    if (sortColumn !== column) {
+      return <span className="ml-2 text-gray-300">↕</span>;
+    }
+    return sortDirection === 'asc' 
+      ? <ArrowUp size={16} className="inline ml-1" /> 
+      : <ArrowDown size={16} className="inline ml-1" />;
+  };
+  const columns = [
+    { key: 'productCode', label: 'Product Code', sortable: true, width: 'w-1/6' },
+    { key: 'requesterName', label: 'Requester', sortable: true, width: 'w-1/6' },
+    { key: 'dateRequested', label: 'Date', sortable: true, width: 'w-1/6', 
+      format: (value) => formatDate(value) },
+    { key: 'department', label: 'Department', sortable: true, width: 'w-1/6' },
+    { key: 'activeStatus', label: 'Status', sortable: true, width: 'w-1/6',
+      render: (value) => (
+        <span className={`inline-flex px-2 py-1 rounded-full text-xs font-medium
+          ${value === 'active' ? 'bg-green-100 text-green-800' : 
+            value === 'inactive' ? 'bg-red-100 text-red-800' : 
+            'bg-gray-100 text-gray-800'}`}>
+          {value || 'N/A'}
+        </span>
+      )},
+    { key: 'reason', label: 'Reason', sortable: false, width: 'w-2/6',
+      format: (value) => value?.substring(0, 50) + (value?.length > 50 ? '...' : '') || 'N/A' },
+    { key: 'actions', label: 'Actions', sortable: false, width: 'w-1/6' }
+  ];
+
+  // [Previous useEffect and fetch functions remain similar]
+
+  return (
+    <div className="min-h-screen bg-gray-100">
+      <Sidebar />
+      <div className="p-4 sm:p-6 lg:p-8 lg:ml-64">
+        <div className="max-w-7xl mx-auto">
+          {/* Header Section */}
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Equipment Change Requests</h1>
+          </div>
+
+          {/* Filters Card */}
+          <Card className="mb-6 bg-white shadow-sm rounded-xl">
+            <CardContent className="p-4 sm:p-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div className="relative sm:col-span-2">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+                  <Input
+                    placeholder="Search by code, requester, or reason..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="pl-10 w-full border-gray-300 focus:ring-2 focus:ring-blue-500 transition-all"
+                  />
+                </div>
+                <select
+                  value={selectedDepartment}
+                  onChange={(e) => setSelectedDepartment(e.target.value)}
+                  className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                >
+                  <option value="all">All Departments</option>
+                  {departments.map(dept => (
+                    <option key={dept} value={dept}>{dept}</option>
+                  ))}
+                </select>
+                <button
+                  onClick={handleReset}
+                  className="w-full px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+                >
+                  Reset
+                </button>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Table */}
+          <Card className="bg-white shadow-sm rounded-xl overflow-hidden">
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead className="bg-gray-50">
+                  <tr>
+                    {columns.map(col => (
+                      <th
+                        key={col.key}
+                        onClick={col.sortable ? () => handleSort(col.key) : undefined}
+                        className={`px-4 py-3 text-left font-medium text-gray-700 uppercase tracking-wider ${col.width}
+                          ${col.sortable ? 'cursor-pointer hover:bg-gray-100' : ''}`}
+                      >
+                        {col.label}
+                        {col.sortable && <SortIcon column={col.key} />}
+                      </th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-200">
+                  {filteredRequests.map((request) => (
+                    <tr key={request.id} className="hover:bg-gray-50 transition-colors">
+                      {columns.map(col => (
+                        <td key={col.key} className="px-4 py-3 text-gray-600">
+                          {col.key === 'actions' ? (
+                            <button
+                              onClick={() => handleViewDetails(request)}
+                              className="px-3 py-1 text-blue-600 hover:text-blue-800 hover:bg-blue-50 rounded-md transition-colors"
+                            >
+                              View
+                            </button>
+                          ) : col.render ? (
+                            col.render(request[col.key])
+                          ) : col.format ? (
+                            col.format(request[col.key])
+                          ) : (
+                            request[col.key] || 'N/A'
+                          )}
+                        </td>
+                      ))}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+            {/* Pagination (optional addition) */}
+            <div className="px-4 py-3 bg-gray-50 border-t border-gray-200 flex justify-between items-center">
+              <p className="text-sm text-gray-700">
+                Showing {filteredRequests.length} of {changeRequests.length} requests
+              </p>
+              <div className="flex gap-2">
+                <button className="px-3 py-1 border rounded-md hover:bg-gray-100">Previous</button>
+                <button className="px-3 py-1 border rounded-md hover:bg-gray-100">Next</button>
+              </div>
+            </div>
+          </Card>
+        </div>
+      </div>
+
+      <ChangeRequestDetailsDialog 
+        isOpen={isDialogOpen}
+        onClose={() => setIsDialogOpen(false)}
+        request={selectedRequest}
+      />
+    </div>
+  );
+};
+
+// Enhanced SortIcon component
+const SortIcon = ({ column }) => {
+  if (sortColumn !== column) return <span className="ml-2 text-gray-400">↕</span>;
+  return sortDirection === 'asc' ? (
+    <ArrowUp className="inline ml-2 h-4 w-4 text-blue-600" />
+  ) : (
+    <ArrowDown className="inline ml-2 h-4 w-4 text-blue-600" />
+  );
+};
+
+export default EquipmentPage;

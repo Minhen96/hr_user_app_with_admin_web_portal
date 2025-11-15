@@ -1,0 +1,139 @@
+import React, { useEffect, useState } from "react";
+import { NavLink } from 'react-router-dom';
+import { 
+  User, 
+  Lock, 
+  Mail, 
+  Building2, 
+  ShieldCheck, 
+  LogOut 
+} from 'lucide-react';
+import Sidebar from "../../../shared/components/Sidebar";
+import PasswordChangeDialog from '../components/PasswordChangeDialog';
+
+function ProfilePage() {
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [isPasswordDialogOpen, setIsPasswordDialogOpen] = useState(false);
+
+  useEffect(() => {
+    const storedUser = localStorage.getItem("user");
+    if (storedUser) {
+      try {
+        const userData = JSON.parse(storedUser);
+        setUser(userData);
+      } catch (error) {
+        console.error("Error parsing user data:", error);
+      }
+    }
+    setLoading(false);
+  }, []);
+
+  const getRoleDisplay = (user) => {
+    const roleMap = {
+      'super-admin': 'Super Admin',
+      'department-admin': 'Department Admin'
+    };
+    return roleMap[user.role.toLowerCase()] || user.role;
+  };
+
+  const getDepartmentDisplay = (user) => {
+    return user.role.toLowerCase() === 'super-admin' 
+      ? 'Access to All Departments' 
+      : user.departmentName;
+  };
+
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-blue-500"></div>
+      </div>
+    );
+  }
+
+  if (!user) {
+    return (
+      <div className="flex justify-center items-center h-screen text-red-500">
+        Please log in to view your profile.
+      </div>
+    );
+  }
+
+  return (
+    <div className="flex min-h-screen bg-gray-100">
+      <Sidebar />
+      <main className="flex-grow p-8 space-y-6 lg:ml-64">
+        <div className="flex items-center space-x-4 mb-6">
+          <h1 className="text-3xl font-bold text-gray-800">Profile</h1>
+        </div>
+
+        <div className="grid md:grid-cols-2 gap-6">
+          <div className="bg-white shadow-md rounded-lg p-6 space-y-4">
+            <div className="flex items-center space-x-3 border-b pb-3">
+              <User className="w-6 h-6 text-blue-600" />
+              <h3 className="text-xl font-semibold text-gray-700">Personal Information</h3>
+            </div>
+            <div className="space-y-2">
+              <ProfileRow label="Full Name" value={user.fullName} />
+              <ProfileRow label="NRIC" value={user.nric} />
+              {user.tin && <ProfileRow label="TIN" value={user.tin} />}
+              {user.epfNo && <ProfileRow label="EPF" value={user.epfNo} />}
+            </div>
+          </div>
+
+          <div className="bg-white shadow-md rounded-lg p-6 space-y-4">
+            <div className="flex items-center space-x-3 border-b pb-3">
+              <Mail className="w-6 h-6 text-green-600" />
+              <h3 className="text-xl font-semibold text-gray-700">Account Information</h3>
+            </div>
+            <div className="space-y-4">
+              <ProfileRow label="Email" value={user.email} />
+              <button 
+                onClick={() => setIsPasswordDialogOpen(true)}
+                className="w-full flex items-center justify-center space-x-2 bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition"
+              >
+                <Lock className="w-5 h-5" />
+                <span>Change Password</span>
+              </button>
+            </div>
+          </div>
+
+          <div className="bg-white shadow-md rounded-lg p-6 space-y-4 md:col-span-2">
+            <div className="flex items-center space-x-3 border-b pb-3">
+              <ShieldCheck className="w-6 h-6 text-purple-600" />
+              <h3 className="text-xl font-semibold text-gray-700">Role & Department</h3>
+            </div>
+            <div className="grid md:grid-cols-2 gap-4">
+              <ProfileRow label="Role" value={getRoleDisplay(user)} />
+              <ProfileRow 
+                label="Department" 
+                value={getDepartmentDisplay(user)} 
+                icon={<Building2 className="w-5 h-5 text-purple-500" />} 
+              />
+            </div>
+          </div>
+        </div>
+
+        <PasswordChangeDialog 
+          isOpen={isPasswordDialogOpen}
+          onClose={() => setIsPasswordDialogOpen(false)}
+        />
+      </main>
+    </div>
+  );
+}
+
+// Helper component for profile rows
+function ProfileRow({ label, value, icon }) {
+  return (
+    <div className="flex items-center space-x-3">
+      {icon}
+      <div>
+        <p className="text-sm text-gray-500">{label}</p>
+        <p className="font-medium text-gray-800">{value}</p>
+      </div>
+    </div>
+  );
+}
+
+export default ProfilePage;

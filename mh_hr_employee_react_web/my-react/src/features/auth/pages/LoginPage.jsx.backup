@@ -1,0 +1,82 @@
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { login } from "../api/authApi";
+import "./LoginPage.css";
+import logo from "../../../images/company-logo.jpg";
+
+function LoginPage() {
+  const navigate = useNavigate();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
+
+  const handleLoginClick = async () => {
+    try {
+      const response = await login(email, password);
+
+      // Check if login was successful (backend returns { success: true, user: {...} })
+      if (response.success && response.user) {
+        localStorage.setItem("user", JSON.stringify(response.user));
+        console.log("Login successful:", response.user);
+        navigate("/main");
+      } else {
+        setErrorMessage(response.message || "Login failed. Please check your credentials.");
+      }
+    } catch (error) {
+      console.error("Login error:", error);
+      const errorMsg = error.response?.data?.message || error.message || "An error occurred during login. Please try again.";
+      setErrorMessage(errorMsg);
+    }
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    handleLoginClick();
+  };
+
+  return (
+    <section className="login-section">
+      <div className="login-container">
+        <div className="login-card">
+          <div className="login-content">
+            <div className="login-image">
+              <img src={logo} alt="Login Illustration" />
+            </div>
+
+            <div className="login-form">
+              <h2 className="login-title">Member Login</h2>
+              <form onSubmit={handleSubmit}>
+                <div className="form-group">
+                  <input
+                    type="email"
+                    placeholder="Email"
+                    className="login-input"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    required
+                  />
+                </div>
+                <div className="form-group">
+                  <input
+                    type="password"
+                    placeholder="Password"
+                    className="login-input"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    required
+                  />
+                </div>
+                {errorMessage && <p className="error-message">{errorMessage}</p>}
+                <button className="login-button" type="submit">
+                  LOGIN
+                </button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+export default LoginPage;

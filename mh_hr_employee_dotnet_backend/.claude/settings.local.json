@@ -1,0 +1,22 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(mkdir:*)",
+      "Bash(dotnet build:*)",
+      "Bash(Select-String -Pattern \"Error\\(s\\)|Warning\\(s\\)|Build succeeded|Build FAILED\")",
+      "Bash(findstr:*)",
+      "Bash(Select-Object -Last 5)",
+      "Bash(awk:*)",
+      "Bash(find:*)",
+      "Bash(for:*)",
+      "Bash(do sed -i 's/AppDbContext/ApplicationDbContext/g' \"$file\")",
+      "Bash(done)",
+      "Bash(dotnet ef migrations:*)",
+      "Bash(dotnet ef database update:*)",
+      "Bash(dir:*)",
+      "Bash(Select-Object -First 5)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}
