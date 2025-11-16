@@ -10,13 +10,14 @@ A comprehensive HR management system with backend API, web admin portal, and mob
 <img width="1919" height="843" alt="Image" src="https://github.com/user-attachments/assets/bcc04131-99e6-411b-a511-803d93ba71c3" />
 
 **mobile**:
-<img width="395" height="610" alt="Image" src="https://github.com/user-attachments/assets/424c5f43-ebab-4f72-b639-528912e1f901" />
-<img width="397" height="614" alt="Image" src="https://github.com/user-attachments/assets/b7978301-915d-4a2c-b0ff-c6633107f021" />
-<img width="396" height="615" alt="Image" src="https://github.com/user-attachments/assets/8b0b45c1-c99e-49ce-a42f-1cd0bf3bf58b" />
-<img width="399" height="612" alt="Image" src="https://github.com/user-attachments/assets/daf5ae3a-b4d2-4a86-ab25-5fa166b07a1c" />
-<img width="399" height="618" alt="Image" src="https://github.com/user-attachments/assets/7303ff96-ecee-4ce9-8aa6-55170794d5e2" />
-<img width="394" height="610" alt="Image" src="https://github.com/user-attachments/assets/ac24beef-8252-4b3d-8735-cc93c3984984" />
-
+<div style="display: flex; flex-wrap: wrap; gap: 10px; justify-content: center;">
+  <img width="395" height="610" alt="Image" src="https://github.com/user-attachments/assets/424c5f43-ebab-4f72-b639-528912e1f901" />
+  <img width="397" height="614" alt="Image" src="https://github.com/user-attachments/assets/b7978301-915d-4a2c-b0ff-c6633107f021" />
+  <img width="396" height="615" alt="Image" src="https://github.com/user-attachments/assets/8b0b45c1-c99e-49ce-a42f-1cd0bf3bf58b" />
+  <img width="399" height="612" alt="Image" src="https://github.com/user-attachments/assets/daf5ae3a-b4d2-4a86-ab25-5fa166b07a1c" />
+  <img width="399" height="618" alt="Image" src="https://github.com/user-attachments/assets/7303ff96-ecee-4ce9-8aa6-55170794d5e2" />
+  <img width="394" height="610" alt="Image" src="https://github.com/user-attachments/assets/ac24beef-8252-4b3d-8735-cc93c3984984" />
+</div>
 
 ## 📁 Project Structure
 
