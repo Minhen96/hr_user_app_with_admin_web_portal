@@ -2,6 +2,22 @@
 
 A comprehensive HR management system with backend API, web admin portal, and mobile employee app.
 
+**web**:
+<img width="1919" height="860" alt="Image" src="https://github.com/user-attachments/assets/cdf6bf0d-e18c-412a-976e-8263093ecca6" />
+<img width="1919" height="860" alt="Image" src="https://github.com/user-attachments/assets/35015660-126c-4029-9517-f5bf75b626a9" />
+<img width="1919" height="855" alt="Image" src="https://github.com/user-attachments/assets/93c8522f-522c-43fd-a197-474de64a2d88" />
+<img width="1918" height="864" alt="Image" src="https://github.com/user-attachments/assets/18297737-e96e-42dd-9055-bb68cc59954f" />
+<img width="1919" height="843" alt="Image" src="https://github.com/user-attachments/assets/bcc04131-99e6-411b-a511-803d93ba71c3" />
+
+**mobile**:
+<img width="395" height="610" alt="Image" src="https://github.com/user-attachments/assets/424c5f43-ebab-4f72-b639-528912e1f901" />
+<img width="397" height="614" alt="Image" src="https://github.com/user-attachments/assets/b7978301-915d-4a2c-b0ff-c6633107f021" />
+<img width="396" height="615" alt="Image" src="https://github.com/user-attachments/assets/8b0b45c1-c99e-49ce-a42f-1cd0bf3bf58b" />
+<img width="399" height="612" alt="Image" src="https://github.com/user-attachments/assets/daf5ae3a-b4d2-4a86-ab25-5fa166b07a1c" />
+<img width="399" height="618" alt="Image" src="https://github.com/user-attachments/assets/7303ff96-ecee-4ce9-8aa6-55170794d5e2" />
+<img width="394" height="610" alt="Image" src="https://github.com/user-attachments/assets/ac24beef-8252-4b3d-8735-cc93c3984984" />
+
+
 ## 📁 Project Structure
 
 This is a monorepo containing three interconnected applications:
