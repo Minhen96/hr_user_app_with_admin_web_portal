@@ -360,9 +360,17 @@ Some admin controllers remain in the legacy folder. These will be gradually migr
 4. Update API documentation
 5. Follow C# coding conventions
 
+## 🔗 Related Projects
+
+This backend serves two frontend applications:
+
+- **Flutter Mobile App**: See `../mh_employee_flutter_app/` for employee mobile application
+- **React Web Admin**: See `../mh_hr_employee_react_web/` for admin web portal
+- **Main Project**: See `../README.md` for monorepo overview and quick start
+
 ## 📄 License
 
-[Add your license information here]
+Proprietary - MH HR Employee Management System
 
 ## 👥 Team
 
@@ -370,4 +378,4 @@ MH HR Development Team
 
 ## 📞 Support
 
-For issues and questions, contact [your support email]
+For issues and questions, contact your system administrator

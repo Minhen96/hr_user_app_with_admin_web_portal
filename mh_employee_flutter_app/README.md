@@ -8,8 +8,9 @@ A modern Flutter mobile application for employees to manage HR tasks, documents,
 - **State Management**: Provider + MobX
 - **Storage**: flutter_secure_storage (JWT), shared_preferences (user data)
 - **HTTP**: http package with Bearer token authentication
-- **Notifications**: Firebase Cloud Messaging
+- **Push Notifications**: Firebase Cloud Messaging
 - **UI Libraries**: flutter_animate, table_calendar, syncfusion_flutter_pdfviewer
+- **Design**: Modern purple gradient theme with dark/light mode support
 
 ## Quick Start
 
@@ -120,13 +121,13 @@ The app features a modern, cohesive design with:
 
 ## API Integration
 
-The app connects to the .NET backend API:
+The app connects to the .NET backend API (see `../mh_hr_employee_dotnet_backend/`):
 
 ```dart
 // lib/services/api_service.dart
-static const String baseUrl = 'YOUR_API_URL';
+static const String baseUrl = 'http://YOUR_API_URL';
 
-// Example API call
+// Example: Get documents from backend
 static Future<List<Document>> getDocuments({
   required String type,
   int page = 1,
@@ -142,15 +143,21 @@ static Future<List<Document>> getDocuments({
 
   if (response.statusCode == 200) {
     final data = json.decode(response.body);
-    return PaginatedResponse<Document>.fromJson(
-      data,
-      (json) => Document.fromJson(json),
-    );
+    return (data as List).map((json) => Document.fromJson(json)).toList();
   } else {
     throw Exception('Failed to load documents');
   }
 }
 ```
+
+**Backend API Endpoints:**
+- Authentication: `/api/Auth/login`
+- Documents: `/api/Document`, `/admin/api/Memo`, `/admin/api/Policy`, `/admin/api/SOP`, `/admin/api/Updates`
+- Equipment: `/admin/api/EquipmentRequest`
+- Leave: `/api/Leave`
+- Training: `/admin/api/Trainings`
+
+See `../mh_hr_employee_dotnet_backend/README.md` for complete API documentation.
 
 ## Firebase Setup
 
@@ -248,6 +255,12 @@ flutter doctor
 - Verify `google-services.json` (Android) or `GoogleService-Info.plist` (iOS) is in correct location
 - Check package name matches Firebase project
 - Enable required Firebase services in console
+
+## Related Projects
+
+- **Backend API**: See `../mh_hr_employee_dotnet_backend/` for .NET backend setup and API documentation
+- **Web Admin Portal**: See `../mh_hr_employee_react_web/` for React admin panel
+- **Main Project**: See `../README.md` for monorepo overview
 
 ## License
 
